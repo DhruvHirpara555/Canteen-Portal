@@ -2,6 +2,8 @@ var express = require("express");
 var bcrypt = require("bcrypt");
 var router = express.Router();
 var jwt = require("jsonwebtoken");
+const saltRounds = 10;
+const secret = require("../authsecret/secret");
 
 // Load User model
 const {User} = require("../models/Users");
@@ -45,7 +47,6 @@ router.get("/vall", function(req, res) {
     })
 });
 
-// register
 
 
 router.post("/register", async (req, res)  => {
@@ -73,6 +74,14 @@ router.post("/register", async (req, res)  => {
             Contact: req.body.Contact,
             buyer: newBuyer._id
         });
+
+        newUser.save()
+        .then(user => {
+            res.status(200).json(user);
+        })
+        .catch(err => {
+            res.status(400).send(err);
+        });
     }
 
     else if(req.body.type == "vendor") {
@@ -95,16 +104,18 @@ router.post("/register", async (req, res)  => {
             Contact: req.body.Contact,
             vendor: newVendor._id
         });
-    }
 
-
-    newUser.save()
+        newUser.save()
         .then(user => {
             res.status(200).json(user);
         })
         .catch(err => {
             res.status(400).send(err);
         });
+    }
+
+
+
 });
 
 
@@ -131,12 +142,14 @@ router.post("/login",async (req, res) => {
 
     const tokenM = user.vendor ? {userId: user._id,vendorId: user.vendor,email: user.email,type : "vendor"} : {userId: user._id,buyerId: user.buyer,email: user.email,type : "buyer"}
 
+    const token = jwt.sign(tokenM, secret);
+
     // tokenM = {
     //     userId: user._id,
     //     vendor: user.vendor,
     //     buyer: user.buyer,
     // }
-    return res.json(tokenM);
+    return res.status(200).json(token);
 
 });
 

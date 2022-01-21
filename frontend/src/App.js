@@ -6,6 +6,7 @@ import Home from "./components/common/Home";
 import Register from "./components/common/Register";
 import Navbar from "./components/templates/Navbar";
 import Profile from "./components/users/Profile";
+import Login from "./components/common/Login";
 
 const Layout = () => {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="users" element={<UsersList />} />
           <Route path="register" element={<Register />} />
+          <Route path="login" element={<Login />} />
           <Route path="profile" element={<Profile />} />
         </Route>
       </Routes>
