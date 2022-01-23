@@ -44,11 +44,11 @@ const VendorSchema = new Schema({
 		required: true
 	},
 	openingtime: {
-		type: String,
+		type: Number,
 		required: true
 	},
 	closingtime: {
-		type: String,
+		type: Number,
 		required: true
 	},
 	//toadd food items and their price

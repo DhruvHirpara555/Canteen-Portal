@@ -12,6 +12,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import axios from 'axios';
 
 function Copyright(props) {
   return (
@@ -33,10 +34,32 @@ export default function SignIn() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     // eslint-disable-next-line no-console
-    console.log({
+    const logincheck = {
       email: data.get('email'),
       password: data.get('password'),
+    };
+    axios
+    .post("http://localhost:4000/user/login", logincheck)
+    .then((response) => {
+      // console.log(response.data);
+      // console.log(response.data.token);
+      // console.log(response.data.check);
+       if (response.data.check === true) {
+        localStorage.setItem('token', response.data.token);
+        window.location.href = '/dashboard';
+        }
+        else {
+        alert("login failed");
+        console.log(response.data)
+      }
+    }
+    )
+    .catch((error) => {
+      console.log(error);
     });
+
+
+
   };
 
   return (

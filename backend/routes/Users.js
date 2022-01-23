@@ -53,6 +53,7 @@ router.post("/register", async (req, res)  => {
 
     const saltRounds = 10;
     const password = await bcrypt.hash(req.body.password, saltRounds);
+    console.log(req);
 
 
     if(req.body.type == "buyer") {
@@ -134,8 +135,9 @@ router.post("/login",async (req, res) => {
 
 
     if (!(await bcrypt.compare(req.body.password, user.password))) {
-        return res.status(400).json({
-            error: "Password incorrect",
+        return res.status(200).json({
+            check: false,
+            error: "Invalid Login details"
         });
     }
 
@@ -144,12 +146,17 @@ router.post("/login",async (req, res) => {
 
     const token = jwt.sign(tokenM, secret);
 
+
     // tokenM = {
     //     userId: user._id,
     //     vendor: user.vendor,
     //     buyer: user.buyer,
     // }
-    return res.status(200).json(token);
+    return res.status(200).json({
+        token: token,
+        check: true
+
+    });
 
 });
 

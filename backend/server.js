@@ -10,6 +10,7 @@ const DB_NAME = "tutorial"
 var testAPIRouter = require("./routes/testAPI");
 var UserRouter = require("./routes/Users");
 var authRouter = require("./middle/auth");
+var dashboardRouter = require("./routes/dashboard")
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -29,6 +30,8 @@ app.use("/user", UserRouter);
 app.use(authRouter)
 
 app.use("/testAPI", testAPIRouter);
+app.use("/dashboard", dashboardRouter);
+
 
 app.listen(PORT, function() {
     console.log("Server is running on Port: " + PORT);
