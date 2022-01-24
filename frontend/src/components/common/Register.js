@@ -59,6 +59,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 //     <Grid container align={"center"} spacing={2}>
 //       <Grid item xs={12}>
 //         <TextField
+
 //           label="Name"
 //           variant="outlined"
 //           value={name}
@@ -67,6 +68,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 //       </Grid>
 //       <Grid item xs={12}>
 //         <TextField
+
 //           label="Email"
 //           variant="outlined"
 //           value={email}
@@ -226,6 +228,7 @@ const Register = (props) => {
       <Grid container align={"center"} spacing={2}>
         <Grid item xs={12}>
           <TextField
+            required
             label="Name"
             variant="outlined"
             value={name}
@@ -234,6 +237,7 @@ const Register = (props) => {
         </Grid>
         <Grid item xs={12}>
           <TextField
+            required
             label="Email"
             variant="outlined"
             value={email}
@@ -242,6 +246,7 @@ const Register = (props) => {
         </Grid>
         <Grid item xs={12}>
           <TextField
+            required
             label="Password"
             variant="outlined"
             value={password}
@@ -250,6 +255,7 @@ const Register = (props) => {
         </Grid>
         <Grid item xs={12}>
           <TextField
+            required
             label="Contact"
             variant="outlined"
             value={Contact}
@@ -285,6 +291,7 @@ const Register = (props) => {
       <Grid container align={"center"} spacing={2}>
         <Grid item xs={12}>
           <TextField
+            required
             label="Name"
             variant="outlined"
             value={name}
@@ -293,6 +300,7 @@ const Register = (props) => {
         </Grid>
         <Grid item xs={12}>
           <TextField
+            required
             label="Email"
             variant="outlined"
             value={email}
@@ -301,6 +309,7 @@ const Register = (props) => {
         </Grid>
         <Grid item xs={12}>
           <TextField
+            required
             label="Password"
             variant="outlined"
             value={password}
@@ -309,6 +318,7 @@ const Register = (props) => {
         </Grid>
         <Grid item xs={12}>
           <TextField
+            required
             label="Contact"
             variant="outlined"
             value={Contact}
@@ -336,6 +346,7 @@ const Register = (props) => {
         </Grid>
         <Grid item xs={12}>
           <TextField
+            required
             label="Batch Name"
             variant="outlined"
             value={batchName}
@@ -344,6 +355,7 @@ const Register = (props) => {
         </Grid>
         <Grid item xs={12}>
           <TextField
+            required
             label="Age"
             variant="outlined"
             value={age}
@@ -365,6 +377,7 @@ const Register = (props) => {
       <Grid container align={"center"} spacing={2}>
         <Grid item xs={12}>
           <TextField
+            required
             label="Name"
             variant="outlined"
             value={name}
@@ -373,6 +386,7 @@ const Register = (props) => {
         </Grid>
         <Grid item xs={12}>
           <TextField
+            required
             label="Email"
             variant="outlined"
             value={email}
@@ -381,6 +395,7 @@ const Register = (props) => {
         </Grid>
         <Grid item xs={12}>
           <TextField
+            required
             label="Password"
             variant="outlined"
             value={password}
@@ -389,6 +404,7 @@ const Register = (props) => {
         </Grid>
         <Grid item xs={12}>
           <TextField
+            required
             label="Contact"
             variant="outlined"
             value={Contact}
@@ -418,6 +434,7 @@ const Register = (props) => {
         </Grid>
         <Grid item xs={12}>
           <TextField
+            required
             label="Shop Name"
             variant="outlined"
             value={shopname}

@@ -45,7 +45,8 @@ export default function SignIn() {
       // console.log(response.data.token);
       // console.log(response.data.check);
        if (response.data.check === true) {
-        localStorage.setItem('token', response.data.token);
+        sessionStorage.setItem('token', response.data.token);
+
         window.location.href = '/dashboard';
         }
         else {

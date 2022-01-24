@@ -6,45 +6,70 @@ const secret = require("../authsecret/secret");
 const {User} = require("../models/Users");
 const {Buyer} = require("../models/Users");
 const {Vendor} = require("../models/Users");
+const Fooditem = require("../models/Fooditem");
 
+router.get("/", function (req,res) {
+    const tokenM = req.header.authorisation;
+    const token = tokenM.substring(7);
 
-// GET request
-//
-
-router.get("/", async (req, res) => {
-    const token = req.body.token
     const decoded = jwt.verify(token, secret);
-    console.log(decoded);
-    const user = await User.findById(decoded.userId);
 
-    if (decoded.type === "buyer") {
-        const buyer = await Buyer.findById(decoded.buyerId);
-        console.log(user);
-        console.log(buyer);
-        const response = {
-            user : user,
-            type : decoded.type,
-            age : buyer.age,
+    if(decoded.type === "vendor")
+    {
+        Fooditem.find({vendor: decoded.id}).then(fooditems => {
+            res.send(fooditems);
         }
-
-        res.json(response);
-    }
-    else if (decoded.type === "vendor"){
-        const vendor = await Vendor.findById(decoded.vendorId);
-        console.log(user);
-        console.log(vendor);
-
-        const response = {
-            user : user,
-            type : decoded.type,
-            vendor : vendor
+        ).catch(err => {
+            res.send(err);
         }
+        );
+    }
 
-        res.json(response);
+})
+
+router.post("/deletefood",function(req,res){
+    const tokenM = req.header.authorisation;
+    const token = tokenM.substring(7);
+
+    const decoded = jwt.verify(token, secret);
+
+    if(decoded.type === "vendor")
+    {
+        Fooditem.deletOne({_id: req.body.id})
+        .then(fooditem => {
+            res.send(fooditem);
+        }
+        ).catch(err => {
+            res.send(err);
+        }
+        );
 
     }
-});
+})
 
-module.exports = router;
+
+router.post("/addfood", function(req,res){
+    const tokenM = req.header.authorisation;
+    const token = tokenM.substring(7);
+
+    const decoded = jwt.verify(token, secret);
+
+    if(decoded.type === "vendor")
+    {
+        const fooditem = new Fooditem({
+            itemname: req.body.itemname,
+            price: req.body.price,
+            type: req.body.type,
+            tags: req.body.tags,
+            vendor: decoded.vendorId
+        });
+        fooditem.save().then(fooditem => {
+            res.send(fooditem);
+        }).catch(err => {
+            res.send(err);
+        });
+    }
+})
+
 
 

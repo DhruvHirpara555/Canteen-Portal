@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import "./App.css";
+import 'antd/dist/antd.css';
 
 import UsersList from "./components/users/UsersList";
 import Home from "./components/common/Home";
@@ -19,6 +20,12 @@ const Layout = () => {
   );
 };
 
+const Logout = () => {
+  sessionStorage.clear()
+  window.location.href = "/";
+}
+
+
 function App() {
   return (
     <BrowserRouter>
@@ -29,6 +36,8 @@ function App() {
           <Route path="register" element={<Register />} />
           <Route path="login" element={<Login />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="dashboard" element={<Home />} />
+          <Route path ="logout" element = {<Logout />}/>
         </Route>
       </Routes>
     </BrowserRouter>

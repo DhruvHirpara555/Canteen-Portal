@@ -10,7 +10,10 @@ const DB_NAME = "tutorial"
 var testAPIRouter = require("./routes/testAPI");
 var UserRouter = require("./routes/Users");
 var authRouter = require("./middle/auth");
-var dashboardRouter = require("./routes/dashboard")
+// var dashboardRouter = require("./routes/dashboard")
+var profile = require("./routes/profile")
+var decode = require("./routes/decode");
+var ediprof = require("./routes/editprof")
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -28,9 +31,10 @@ connection.once('open', function() {
 app.use("/user", UserRouter);
 
 app.use(authRouter)
-
+app.use("/decode", decode)
 app.use("/testAPI", testAPIRouter);
-app.use("/dashboard", dashboardRouter);
+app.use("/profile", profile);
+app.use("/edit",ediprof);
 
 
 app.listen(PORT, function() {

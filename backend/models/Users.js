@@ -51,6 +51,11 @@ const VendorSchema = new Schema({
 		type: Number,
 		required: true
 	},
+	// orders: [{
+	// 	type: Schema.Types.ObjectId,
+	// 	ref: 'Order',
+	// 	default: []
+	// }]
 	//toadd food items and their price
 	// fooditems: [{
 	// 	type: Schema.Types.ObjectId,
@@ -82,6 +87,11 @@ const BuyerSchema = new Schema({
 		type: Number,
 		default: 0
 	},
+	favourites: [{
+		type: Schema.Types.ObjectId,
+		ref: 'Fooditems',
+		default: []
+	}],
 });
 
 module.exports = {

@@ -19,6 +19,10 @@ const Foodschema = new Schema({
         type: [String],
         required: true
     },
+    rating: {
+        type: Number,
+        default: 0
+    },
     vendor: {
         type: Schema.Types.ObjectId,
         ref: "Vendor",
