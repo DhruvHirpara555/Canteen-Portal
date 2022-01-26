@@ -132,7 +132,7 @@ const Navbar = () => {
               Canteen Portal
             </Typography>
             <Box sx={{ flexGrow: 1 }} />
-            <Button color="inherit" onClick={() => navigate("/dashboard")}>
+            <Button color="inherit" onClick={() => navigate("/vdashboard")}>
               Dashboard
             </Button>
             <Button color="inherit" onClick={() => navigate("/profile")}>

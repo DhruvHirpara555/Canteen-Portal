@@ -8,6 +8,7 @@ import Register from "./components/common/Register";
 import Navbar from "./components/templates/Navbar";
 import Profile from "./components/users/Profile";
 import Login from "./components/common/Login";
+import VendorDash from "./components/Dashboard/dashboardvendor"
 
 const Layout = () => {
   return (
@@ -38,6 +39,7 @@ function App() {
           <Route path="profile" element={<Profile />} />
           <Route path="dashboard" element={<Home />} />
           <Route path ="logout" element = {<Logout />}/>
+          <Route path = "vdashboard" element = {<VendorDash />}/>
         </Route>
       </Routes>
     </BrowserRouter>

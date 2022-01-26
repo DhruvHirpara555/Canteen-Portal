@@ -4,10 +4,11 @@ const Schema = mongoose.Schema;
 const Foodschema = new Schema({
     itemname: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     price: {
-        type: String,
+        type: Number,
         required: true
     },
     type: {
@@ -17,10 +18,11 @@ const Foodschema = new Schema({
     },
     tags: {
         type: [String],
-        required: true
+        default: []
     },
     rating: {
         type: Number,
+        enum : [0,1,2,3,4,5],
         default: 0
     },
     vendor: {
@@ -30,4 +32,4 @@ const Foodschema = new Schema({
     }
 });
 
-mongoose.exports = Fooditems = mongoose.model("Fooditems", Foodschema);
+module.exports = Fooditem = mongoose.model("Fooditems", Foodschema);

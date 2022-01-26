@@ -9,12 +9,12 @@ const orderSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ["placed", "accepted","cooking","ready", "rejected"],
+        enum: ["placed", "accepted","cooking","ready","completed", "rejected"],
         default: "placed"
     },
     buyer: {
         type: Schema.Types.ObjectId,
-        ref: "Buyer",
+        ref: "User",
         required: true
     },
     vendor: {

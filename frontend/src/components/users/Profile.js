@@ -334,7 +334,7 @@ const Profile = (props) => {
       );
   }
 
-  return <div>Fuck Rp</div>
+  return <div></div>
 
 
 };
