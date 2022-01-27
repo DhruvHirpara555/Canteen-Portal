@@ -59,15 +59,16 @@ const Fooditemslist = () => {
     //     console.log('Received values of form: ', values);
     //     setVisible(false);
     //   };
-    const [form] = Form.useForm();
+    const [editForm] = Form.useForm();
+    const [addForm] = Form.useForm();
 
     const showModal = () => {
         setIsModalVisible(true);
-        form.resetFields();
+        editForm.resetFields();
     };
     const handleCancel = () => {
         setIsModalVisible(false)
-        form.resetFields()
+        editForm.resetFields()
     };
 
     const handleSubmit = (values) => {
@@ -79,14 +80,14 @@ const Fooditemslist = () => {
                 authorization: `Bearer ${token}`
             }
         }).then(res => {
-            form.resetFields()
+            editForm.resetFields()
             console.log(res)
         }
         ).catch(err => {
             console.log(err)
         }
         )
-        form.resetFields()
+        // form.resetFields()
         setEditflag(!editflag)
         // window.location.reload()
     }
@@ -224,7 +225,7 @@ const Fooditemslist = () => {
         }
         )
         setAddfood(false);
-        form.resetFields()
+        addForm.resetFields()
     };
 
 
@@ -235,8 +236,8 @@ const Fooditemslist = () => {
             <Button onClick={() => { setAddfood(true) }}>
                 Add Food
             </Button>
-            <Modal visible={addfood} onOk={form.submit} onCancel={() => { {setAddfood(false);form.resetFields() }}} >
-                <Form form={form} onFinish={Ok} name="fooditem" labelCol={{ span: 8 }} wrapperCol={{ span: 10 }}>
+            <Modal visible={addfood} onOk={addForm.submit} onCancel={() => { {setAddfood(false);addForm.resetFields() }}} >
+                <Form form={addForm} onFinish={Ok} name="fooditem" labelCol={{ span: 8 }} wrapperCol={{ span: 10 }}>
                     <Form.Item name="itemname"  label="Item Name" rules={[{ required: true, message: 'Please input item name!' }]}>
                         <Input />
                     </Form.Item>
@@ -271,9 +272,9 @@ const Fooditemslist = () => {
                 </Form>
             </Modal>
             <Table columns={columns} dataSource={data} />
-            <Modal visible={isModalVisible} onOk={form.submit} onCancel={handleCancel}>
+            <Modal visible={isModalVisible} onOk={editForm.submit} onCancel={handleCancel}>
                 <Form
-                    form={form}
+                    form={editForm}
                     labelCol={{ span: 8 }}
                     wrapperCol={{ span: 10 }}
                     onFinish={handleSubmit}

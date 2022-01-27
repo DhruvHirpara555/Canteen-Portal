@@ -32,4 +32,4 @@ const Foodschema = new Schema({
     }
 });
 
-module.exports = Fooditem = mongoose.model("Fooditems", Foodschema);
+module.exports = Fooditem = mongoose.model("Fooditem", Foodschema);

@@ -12,6 +12,10 @@ const orderSchema = new Schema({
         enum: ["placed", "accepted","cooking","ready","completed", "rejected"],
         default: "placed"
     },
+    quantity: {
+        type: Number,
+        default: 1
+    },
     buyer: {
         type: Schema.Types.ObjectId,
         ref: "User",
@@ -23,5 +27,7 @@ const orderSchema = new Schema({
         required: true
     }
 });
+
+orderSchema.set('timestamps', true);
 
 module.exports = Order = mongoose.model("Order", orderSchema);
