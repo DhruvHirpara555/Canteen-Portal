@@ -7,6 +7,7 @@ import Typography from "@mui/material/Typography";
 import axios from "axios";
 import {useState, useEffect} from "react";
 
+
 async function decodetoken(token) {
 
   console.log("decoding token");
@@ -35,10 +36,11 @@ async function decodetoken(token) {
 
 }
 
-const Navbar = () => {
+const Navbar =  () => {
   const navigate = useNavigate();
-
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [wallet, setWallet] = useState(0);
 
   useEffect(async () => {
     // decode the token from local storage
@@ -49,10 +51,27 @@ const Navbar = () => {
       const u = await decodetoken(token);
       console.log(u);
       setUser(u.type);
+      if (u.type === "buyer"){
+        axios.get("http://localhost:4000/buyerdash/money", {
+          headers: {
+            authorization: `Bearer ${sessionStorage.getItem("token")}`
+          }
+        })
+        .then(res => {
+          setWallet(res.data.wallet);
+          console.log(res.data);
+          setLoading(false);
+        })
+        .catch(err => {
+          console.log(err);
+        })
+      }
     }
     else {
       setUser(null);
     }
+    console.log(user);
+
    }, [navigate]);
 
    if (user === null) {
@@ -89,6 +108,10 @@ const Navbar = () => {
   };
 
   if(user === "buyer") {
+
+
+
+
     return (
       <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static">
@@ -111,6 +134,12 @@ const Navbar = () => {
             </Button>
             <Button color="inherit" onClick={() => navigate("/logout")}>
               Logout
+            </Button>
+            <Button color="inherit" onClick={() => navigate("/addmoney")}>
+              Add Money
+            </Button>
+            <Button color = "inherit" disabled>
+              Wallet Balance: {wallet}
             </Button>
           </Toolbar>
         </AppBar>

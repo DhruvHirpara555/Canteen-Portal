@@ -20,11 +20,9 @@ function movetonext(orderId) {
 
 }
 
-function rejectorder(orderid) {
-    console.log(orderid);
-    axios.post("http://localhost:4000/dashboard/order/reject",{
-        orderId : orderid,
-    },{
+function rejectorder(record) {
+
+    axios.post("http://localhost:4000/dashboard/order/reject",record,{
         headers : {
             authorization : `Bearer ${sessionStorage.getItem('token')}`
         }
@@ -139,7 +137,7 @@ const Orderlist = () => {
             render: (text, record) => (
                 <Space size="middle">
                     <Button disabled = {(record.status == "completed") || (record.status == "rejected")} onClick={() => {movetonext(record.orderId);setUpdateflag(!updateflag)}}>movetonext from {record.status}</Button>
-                    <Button disabled = {(record.status == "completed") || (record.status == "rejected")} onClick={() => {rejectorder(record.orderId);setDeleteflag(!deleteflag)}}>Reject</Button>
+                    <Button disabled = {(record.status == "completed") || (record.status == "rejected")} onClick={() => {rejectorder(record);setDeleteflag(!deleteflag)}}>Reject</Button>
                 </Space>
             ),
         },

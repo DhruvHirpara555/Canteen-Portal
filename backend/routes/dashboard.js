@@ -53,6 +53,7 @@ router.get("/orders",async  (req,res) => {
             status: order.status,
             buyer: order.buyer.name,
             Contact: order.buyer.Contact,
+            buyerId: order.buyer.buyer,
             placedtime: order.createdAt,
             orderId : order._id
         })
@@ -92,15 +93,17 @@ router.get("/orders",async  (req,res) => {
 
 })
 
-router.post("/order/reject", function (req,res) {
+router.post("/order/reject",async function (req,res) {
     const decoded = decodeToken(req.headers.authorization.substring(7));
-    Order.findByIdAndUpdate(req.body.orderId, { $set: { status: "rejected" } })
-    .then(order => {
-        res.send(order);
+    const orderup = await Order.updateOne({_id: req.body.orderId}, {$set : {status : 'rejected'}})
+    const buyerup = await Buyer.updateOne({_id : req.body.buyerId}, { $inc : {wallet : (req.body.price * req.body.quantity)}})
+
+    res.send({
+        orderstat : orderup,
+        buyerstat : buyerup
     })
-    .catch(err => {
-        res.send(err);
-    })
+
+
 })
 
 router.post("/order/movetonext", async function (req,res) {
