@@ -14,19 +14,69 @@ function decodeToken(token) {
     return jwt.verify(token, secret);
 }
 
-router.get("/", function (req, res) {
-    const decoded = decodeToken(req.headers.authorization.substring(7));
+function isAvailable(opening,closing){
+    const currentTime = new Date();
+    const currentHour = parseInt(currentTime.getHours());
+    const currentMinute = parseInt(currentTime.getMinutes());
+    const curr = currentHour*60 + currentMinute;
+    console.log(curr);
+    console.log(opening);
+    console.log(closing);
+    if(opening < closing){
+        if(curr >= opening && curr <= closing){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    else{
+        if(curr >= opening || curr <= closing){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+}
+
+router.get("/", async function (req, res) {
+    const decoded = await decodeToken(req.headers.authorization.substring(7));
     if(decoded.type === "buyer")
     {
-        Fooditem.find().populate("vendor")
-        .then(fooditems => {
-            res.send(fooditems);
-        })
-        .catch(err => {
-            res.send(err);
-        })
+        const buyer = await Buyer.findOne({_id: decoded.buyerId});
+        var response  = {
+            status: "",
+            available: [],
+            unavailable: [],
+            avafav: [],
+            unavafav: [],
+        }
+
+        const foodlist = await Fooditem.find().populate("vendor");
+        console.log(foodlist);
+
+
+        foodlist.forEach(fooditem => {
+            console.log(fooditem.vendor);
+            if(isAvailable(fooditem.vendor.openingtime,fooditem.vendor.closingtime)){
+                response.available.push(fooditem);
+                if(buyer.favourites.includes(fooditem._id)){
+                    response.avafav.push(fooditem);
+                }
+            }
+            else{
+                response.unavailable.push(fooditem);
+                if(buyer.favourites.includes(fooditem._id)){
+                    response.unavafav.push(fooditem);
+                }
+            }
+        });
+        response.status = "success";
+        return (res.send(response));
 
     }
+    return (res.send("Invalid request"));
 })
 
 router.get("/money", function (req,res) {
@@ -92,5 +142,37 @@ router.post("/orderfood", async function (req,res) {
     }
 })
 
+router.post("/fav",async function(req,res){
+    const decoded = decodeToken(req.headers.authorization.substring(7));
+    if(decoded.type === "buyer")
+    {
+        const food = await Fooditem.findById(req.body.fooditem);
+        if(food){
+        const buyer = await Buyer.findOne({_id: decoded.buyerId});
+
+            if(buyer.favourites.includes(req.body.fooditem)){
+                Buyer.updateOne({_id: decoded.buyerId}, {$pull: {favourites: req.body.fooditem}})
+                .then(user => {
+                    res.send(user);
+                })
+                .catch(err => {
+                    res.send(err);
+                })
+            }
+            else{
+                Buyer.updateOne({_id: decoded.buyerId}, {$push: {favourites: req.body.fooditem}})
+                .then(user => {
+                    res.send(user);
+                })
+                .catch(err => {
+                    res.send(err);
+                })
+            }
+        }
+        else{
+            res.send("Food item not found");
+        }
+    }
+})
 
 module.exports = router;

@@ -29,7 +29,11 @@ const Foodschema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "Vendor",
         required: true
-    }
+    },
+    total: {
+        type: Number,
+        default: 0
+    },
 });
 
 module.exports = Fooditem = mongoose.model("Fooditem", Foodschema);
