@@ -5,14 +5,16 @@ import Toolbar from "@mui/material/Toolbar";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import axios from "axios";
-import {useState, useEffect} from "react";
+import { useState, useEffect } from "react";
+import { Form, InputNumber,Modal } from "antd";
+
 
 
 async function decodetoken(token) {
 
   console.log("decoding token");
 
-  const u = await axios.get("http://localhost:4000/decode/",{
+  const u = await axios.get("http://localhost:4000/decode/", {
     headers: {
       authorization: `Bearer ${token}`
     }
@@ -36,11 +38,14 @@ async function decodetoken(token) {
 
 }
 
-const Navbar =  () => {
+const Navbar = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [wallet, setWallet] = useState(0);
+  const [visible, setVisible] = useState(false);
+  const [money, setMoney] = useState(false);
+  const [addmoney] = Form.useForm();
 
   useEffect(async () => {
     // decode the token from local storage
@@ -51,30 +56,30 @@ const Navbar =  () => {
       const u = await decodetoken(token);
       console.log(u);
       setUser(u.type);
-      if (u.type === "buyer"){
+      if (u.type === "buyer") {
         axios.get("http://localhost:4000/buyerdash/money", {
           headers: {
             authorization: `Bearer ${sessionStorage.getItem("token")}`
           }
         })
-        .then(res => {
-          setWallet(res.data.wallet);
-          console.log(res.data);
-          setLoading(false);
-        })
-        .catch(err => {
-          console.log(err);
-        })
+          .then(res => {
+            setWallet(res.data.wallet);
+            console.log(res.data);
+            setLoading(false);
+          })
+          .catch(err => {
+            console.log(err);
+          })
       }
     }
     else {
       setUser(null);
     }
-    console.log(user);
 
-   }, [navigate]);
 
-   if (user === null) {
+  }, [navigate,money]);
+
+  if (user === null) {
 
     return (
       <Box sx={{ flexGrow: 1 }}>
@@ -107,7 +112,7 @@ const Navbar =  () => {
     );
   };
 
-  if(user === "buyer") {
+  if (user === "buyer") {
 
 
 
@@ -126,7 +131,7 @@ const Navbar =  () => {
             </Typography>
             <Box sx={{ flexGrow: 1 }} />
 
-            <Button color = "inherit" onClick={() => navigate("/dashboard")}>
+            <Button color="inherit" onClick={() => navigate("/bdashboard")}>
               Dashboard
             </Button>
             <Button color="inherit" onClick={() => navigate("/profile")}>
@@ -135,19 +140,56 @@ const Navbar =  () => {
             <Button color="inherit" onClick={() => navigate("/logout")}>
               Logout
             </Button>
-            <Button color="inherit" onClick={() => navigate("/addmoney")}>
+            <Button color="inherit" onClick={() => { setVisible(true) }}>
               Add Money
             </Button>
-            <Button color = "inherit" disabled>
+            <Button color="inherit" disabled>
               Wallet Balance: {wallet}
             </Button>
+            <Modal title="Add Money to Wallet"
+              visible={visible}
+              onOk={() => {
+                addmoney.validateFields().then(values => {
+                  console.log(values);
+                  axios.post("http://localhost:4000/buyerdash/addmoney", {
+                    amount: values.amount
+                  }, {
+                    headers: {
+                      authorization: `Bearer ${sessionStorage.getItem("token")}`
+                    }
+                  })
+                    .then(res => {
+                      console.log("hi");
+                      console.log(res.data);
+                      setVisible(false);
+                      setMoney(!money);
+                    })
+                    .catch(err => {
+                      console.log(err);
+                    })
+                }
+                )
+
+              }}
+              onCancel={() => {
+                setVisible(false);
+              }}
+            >
+              <Form form={addmoney} title="Add money to wallet" initialValues={{ remember: true }}>
+                <Form.Item name="amount"
+                  rules={[{ required: true, message: "Value required" },{type: 'number',min : 0}]}
+                >
+                  <InputNumber placeholder="Amount" />
+                </Form.Item>
+              </Form>
+            </Modal>
           </Toolbar>
         </AppBar>
       </Box>
     );
   }
 
-  if(user === "vendor") {
+  if (user === "vendor") {
     return (
       <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static">

@@ -51,7 +51,12 @@ router.get("/", async function (req, res) {
             unavailable: [],
             avafav: [],
             unavafav: [],
+            tags: [],
+            vendors: []
         }
+        var tags = [];
+        var vendors = []
+
 
         const foodlist = await Fooditem.find().populate("vendor");
         console.log(foodlist);
@@ -59,20 +64,26 @@ router.get("/", async function (req, res) {
 
         foodlist.forEach(fooditem => {
             console.log(fooditem.vendor);
+            vendors.push(fooditem.vendor.shopname);
+            tags.push(fooditem.tags);
             if(isAvailable(fooditem.vendor.openingtime,fooditem.vendor.closingtime)){
                 response.available.push(fooditem);
                 if(buyer.favourites.includes(fooditem._id)){
-                    response.avafav.push(fooditem);
+                    response.avafav.push(fooditem._id);
                 }
             }
             else{
                 response.unavailable.push(fooditem);
                 if(buyer.favourites.includes(fooditem._id)){
-                    response.unavafav.push(fooditem);
+                    response.unavafav.push(fooditem._id);
                 }
             }
         });
+        response.tags = [...new Set(tags.flat())];
+        response.vendors = [...new Set(vendors)];
+
         response.status = "success";
+        console.log(response);
         return (res.send(response));
 
     }

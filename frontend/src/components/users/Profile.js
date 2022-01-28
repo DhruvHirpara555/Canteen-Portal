@@ -275,12 +275,18 @@ const Profile = (props) => {
           label="Open time hours"
           rules={[
             {
-              required : true
+              required : true,
+
             },
+            {
+              type : 'number',
+              min : 0,
+              max : 23
+            }
           ]}
 
         >
-          <Input disabled = {editflag}/>
+          <InputNumber disabled = {editflag}/>
         </Form.Item>
 
         <Form.Item
@@ -288,12 +294,18 @@ const Profile = (props) => {
           label="Open time mins"
           rules={[
             {
-              required : true
+              required : true,
+
             },
+            {
+              type : 'number',
+              min : 0,
+              max : 59
+            }
           ]}
 
         >
-          <Input disabled = {editflag}/>
+          <InputNumber disabled = {editflag}/>
         </Form.Item>
 
         <Form.Item
@@ -301,8 +313,14 @@ const Profile = (props) => {
           label="Close time hours"
           rules={[
             {
-              required : true
+              required : true,
+
             },
+            {
+              type : 'number',
+              min : 0,
+              max : 23
+            }
           ]}
 
         >
@@ -316,6 +334,11 @@ const Profile = (props) => {
             {
               required : true
             },
+            {
+              type : 'number',
+              min : 0,
+              max : 59
+            }
           ]}
 
         >
