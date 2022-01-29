@@ -15,6 +15,7 @@ var profile = require("./routes/profile")
 var decode = require("./routes/decode");
 var ediprof = require("./routes/editprof")
 var buyrouter = require("./routes/buyerdash");
+var statsrouter = require("./routes/stats");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -38,6 +39,7 @@ app.use("/testAPI", testAPIRouter);
 app.use("/profile", profile);
 app.use("/edit",ediprof);
 app.use("/buyerdash",buyrouter);
+app.use("/stats",statsrouter);
 
 
 app.listen(PORT, function() {

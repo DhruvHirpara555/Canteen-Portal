@@ -165,6 +165,7 @@ router.post("/orderfood", async function (req,res) {
         if(user.buyer.wallet >= price){
 
             await Buyer.updateOne({_id: decoded.buyerId}, {$inc: {wallet: -price}})
+            await Fooditem.updateOne({_id: req.body.fooditem}, {$inc: {total: req.body.quantity}})
 
             const order = new Order({
                 fooditem: req.body.fooditem,

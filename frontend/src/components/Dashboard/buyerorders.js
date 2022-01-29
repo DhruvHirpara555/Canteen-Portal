@@ -45,6 +45,7 @@ const Buyerorder = () => {
             }
         })
         .then(res => {
+
             console.log(res.data);
         })
         .catch(err => {
@@ -125,7 +126,7 @@ const Buyerorder = () => {
             key: "action",
             render: (text, record) => (
                 <Space size="middle">
-                    <Button onClick={()=> {pickUp(record.orderId);setFlag(!flag)}} disabled = {(record.status != "ready") }> {record.status}</Button>
+                    <Button onClick={()=> {pickUp(record.orderId);setFlag(!flag)}} disabled = {(record.status != "ready") }> Pick up</Button>
                     {/* <Button disabled = {(record.status == "completed") || (record.status == "rejected")} onClick={() => {rejectorder(record);setDeleteflag(!deleteflag)}}>Reject</Button> */}
                 </Space>
             ),

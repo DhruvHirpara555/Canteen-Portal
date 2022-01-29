@@ -212,6 +212,9 @@ const Navbar = () => {
             <Button color="inherit" onClick={() => navigate("/orderdashboard")}>
               orders
             </Button>
+            <Button color="inherit" onClick={() => navigate("/stats")}>
+              stats
+            </Button>
             <Button color="inherit" onClick={() => navigate("/profile")}>
               My Profile
             </Button>

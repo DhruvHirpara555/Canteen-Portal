@@ -87,7 +87,12 @@ const Buyer  =  () => {
 
             setVisible(false);
             buyform.resetFields();
-            window.location.href ="/buyerorders";
+            if(res.data != "Insufficient Balance"){
+                window.location.href ="/buyerorders";
+            }
+            else{
+                alert("Insufficient Balance")
+            }
         }
         )
         .catch(err => {
@@ -554,13 +559,7 @@ const Buyer  =  () => {
                 onFinish={buyfoodSubmit}
 
                 >
-                <Form.Item
-                    label="Q"
-                    name="quantity"
-                    rules={[{ required: true, message: 'Please input the quantity!' }]}
-                    >
-                        <InputNumber min={1} max={10} />
-                </Form.Item>
+
                 <Form.Item
                     label="Quantity"
                     name="quantity"

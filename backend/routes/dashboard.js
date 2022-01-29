@@ -9,6 +9,21 @@ const {Vendor} = require("../models/Users");
 const Fooditem = require("../models/Fooditem");
 const Order = require("../models/orders");
 
+var nodemailer = require("nodemailer")
+
+let transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
+    auth: {
+        user: "assignmentdass@gmail.com",
+        pass: "q1w2e3r4t5y6@",
+    },
+    tls: {
+        rejectUnauthorized: false
+    }
+});
+
 
 function decodeToken(token) {
     return jwt.verify(token, secret);
@@ -115,8 +130,24 @@ router.get("/orders",async  (req,res) => {
 
 router.post("/order/reject",async function (req,res) {
     const decoded = decodeToken(req.headers.authorization.substring(7));
+    const order = await Order.findById(req.body.orderId).populate("buyer");
     const orderup = await Order.updateOne({_id: req.body.orderId}, {$set : {status : 'rejected'}})
     const buyerup = await Buyer.updateOne({_id : req.body.buyerId}, { $inc : {wallet : (req.body.price * req.body.quantity)}})
+
+    const mailOptions = {
+        from: "assignmentdass@gmail.com",
+        to: order.buyer.email,
+        subject: "Order Rejected",
+        text: "Your order has been rejected by the vendor"
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log("Email sent: " + info.response);
+        }
+    });
 
     res.send({
         orderstat : orderup,
@@ -128,23 +159,51 @@ router.post("/order/reject",async function (req,res) {
 
 router.post("/order/movetonext", async function (req,res) {
     const decoded = decodeToken(req.headers.authorization.substring(7));
+    const acceptedcount = await Order.count({vendor: decoded.vendorId, status: 'accepted'});
+    const cookingcount = await Order.count({vendor: decoded.vendorId, status: 'cooking'});
+    const pending = acceptedcount + cookingcount;
+    console.log(pending);
+
     if(decoded.type === "vendor")
     {
-        const order = await Order.findById(req.body.orderId);
-        console.log(order);
+        const orderm = await Order.findById(req.body.orderId).populate("buyer");
+        console.log(orderm, orderm.buyer.email);
 
-        if(order.status === "placed")
+
+        if(orderm.status === "placed")
         {
-            Order.findByIdAndUpdate(req.body.orderId, { $set: { status: "accepted" } })
-            .then(order => {
-                res.send(order);
+            if (pending < 10){
+                Order.findByIdAndUpdate(req.body.orderId, { $set: { status: "accepted" } })
+                .then(order => {
+                    res.send(order);
+                    console.log(orderm);
+                    var mailOptions = {
+                        from: "assignmentdass@gmail.com",
+                        to: orderm.buyer.email,
+                        subject: "Order Accepted",
+                        text: "Your order has been accepted"
+                    }
+                    console.log(mailOptions);
+                    transporter.sendMail(mailOptions, function (error, info) {
+                        if (error) {
+                            console.log(error);
+                        } else {
+                            console.log("Email sent: " + info.response);
+                        }
+                    }
+                    );
+                }
+                ).catch(err => {
+                    res.send(err);
+                }
+                );
             }
-            ).catch(err => {
-                res.send(err);
+            else
+            {
+                res.send("Order limit reached");
             }
-            );
         }
-        else if(order.status === "accepted")
+        else if(orderm.status === "accepted")
         {
             Order.findByIdAndUpdate(req.body.orderId, { $set: { status: "cooking" } })
             .then(order => {
@@ -155,7 +214,7 @@ router.post("/order/movetonext", async function (req,res) {
             }
             );
         }
-        else if(order.status === "cooking")
+        else if(orderm.status === "cooking")
         {
             Order.findByIdAndUpdate(req.body.orderId, { $set: { status: "ready" } })
             .then(order => {
@@ -166,7 +225,7 @@ router.post("/order/movetonext", async function (req,res) {
             }
             );
         }
-        else if(order.status === "ready")
+        else if(orderm.status === "ready")
         {
             Order.findByIdAndUpdate(req.body.orderId, { $set: { status: "completed" } })
             .then(order => {

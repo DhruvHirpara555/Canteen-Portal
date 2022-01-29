@@ -13,6 +13,10 @@ function movetonext(orderId) {
     })
     .then(res => {
         console.log(res.data);
+        if(res.data == "Order limit reached")
+        {
+            alert("Order limit reached");
+        }
     })
     .catch(err => {
         console.log(err);

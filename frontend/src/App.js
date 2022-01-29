@@ -12,6 +12,7 @@ import VendorDash from "./components/Dashboard/dashboardvendor"
 import OrderDash from "./components/Dashboard/Orderdash"
 import BuyerDash from "./components/Dashboard/dashboardbuyer"
 import BuyerOrder from "./components/Dashboard/buyerorders"
+import Stats from "./components/Dashboard/stats";
 
 const Layout = () => {
   return (
@@ -46,6 +47,7 @@ function App() {
           <Route path = "orderdashboard" element = {<OrderDash />}/>
           <Route path = "bdashboard" element = {<BuyerDash />}/>
           <Route path = "buyerorders" element = {<BuyerOrder />}/>
+          <Route path = "stats" element = {<Stats />}/>
         </Route>
       </Routes>
     </BrowserRouter>
