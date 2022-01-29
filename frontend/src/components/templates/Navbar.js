@@ -140,6 +140,9 @@ const Navbar = () => {
             <Button color="inherit" onClick={() => navigate("/logout")}>
               Logout
             </Button>
+            <Button color="inherit" onClick={() => navigate("/buyerorders")}>
+              Orders
+            </Button>
             <Button color="inherit" onClick={() => { setVisible(true) }}>
               Add Money
             </Button>

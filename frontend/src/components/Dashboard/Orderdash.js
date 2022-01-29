@@ -136,8 +136,8 @@ const Orderlist = () => {
             key: "action",
             render: (text, record) => (
                 <Space size="middle">
-                    <Button disabled = {(record.status == "completed") || (record.status == "rejected")} onClick={() => {movetonext(record.orderId);setUpdateflag(!updateflag)}}>movetonext from {record.status}</Button>
-                    <Button disabled = {(record.status == "completed") || (record.status == "rejected")} onClick={() => {rejectorder(record);setDeleteflag(!deleteflag)}}>Reject</Button>
+                    <Button disabled = {(record.status == "ready")||(record.status == "completed") || (record.status == "rejected")} onClick={() => {movetonext(record.orderId);setUpdateflag(!updateflag)}}>movetonext from {record.status}</Button>
+                    <Button disabled = {(record.status == "ready")||(record.status == "completed") || (record.status == "rejected")} onClick={() => {rejectorder(record);setDeleteflag(!deleteflag)}}>Reject</Button>
                 </Space>
             ),
         },
@@ -149,4 +149,3 @@ const Orderlist = () => {
 }
 
 export default Orderlist;
-

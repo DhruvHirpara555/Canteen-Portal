@@ -42,24 +42,44 @@ router.get("/orders",async  (req,res) => {
     const decoded = decodeToken(req.headers.authorization.substring(7));
 
 
-
-    const orders = await Order.find({vendor: decoded.vendorId}).sort({createdAt: -1}).populate(["fooditem", "buyer", "vendor"])
-    const orderlist = await orders.map( (order,inx) => {
-        return ({
-            key : inx,
-            fooditem: order.fooditem.itemname,
-            price: order.fooditem.price,
-            quantity: order.quantity,
-            status: order.status,
-            buyer: order.buyer.name,
-            Contact: order.buyer.Contact,
-            buyerId: order.buyer.buyer,
-            placedtime: order.createdAt,
-            orderId : order._id
+    if(decoded.type === "vendor"){
+        const orders = await Order.find({vendor: decoded.vendorId}).sort({createdAt: -1}).populate(["fooditem", "buyer", "vendor"])
+        const orderlist = await orders.map( (order,inx) => {
+            return ({
+                key : inx,
+                fooditem: order.fooditem.itemname,
+                price: order.fooditem.price,
+                quantity: order.quantity,
+                status: order.status,
+                buyer: order.buyer.name,
+                Contact: order.buyer.Contact,
+                buyerId: order.buyer.buyer,
+                placedtime: order.createdAt,
+                orderId : order._id
+            })
         })
-    })
-    console.log(orderlist);
-    res.send(orderlist);
+        // console.log(orderlist);
+        res.send(orderlist);
+    }
+
+    if(decoded.type === "buyer" ){
+        const orders = await Order.find({buyer: decoded.userId}).sort({createdAt: -1}).populate(["fooditem", "buyer", "vendor"])
+        const orderlist = await orders.map( (order,inx) => {
+            return ({
+                key : inx,
+                fooditem: order.fooditem.itemname,
+                price: order.fooditem.price,
+                rating: order.rating,
+                quantity: order.quantity,
+                status: order.status,
+                vendor: order.vendor.shopname,
+                placedtime: order.createdAt,
+                orderId : order._id
+            })
+        })
+        console.log(orderlist);
+        res.send(orderlist);
+    }
     // const orderlist = await orders.map(async (order,inx) => {
     //     const food = await Fooditem.findById(order.fooditem);
     //     const buyer = await User.findById(order.buyer);
@@ -161,7 +181,20 @@ router.post("/order/movetonext", async function (req,res) {
 })
 
 
+router.post("/order/pickup", async function (req,res) {
+    const decoded = decodeToken(req.headers.authorization.substring(7));
+    if(decoded.type === "buyer")
+    {
+        const order = await Order.findById(req.body.orderId);
+        console.log(order);
 
+        if(order.status === "ready")
+        {
+            const orderup = await Order.findByIdAndUpdate(req.body.orderId, { $set: { status: "completed" } })
+            console.log(orderup);
+        }
+    }
+})
 
 
 router.post("/deletefood",function(req,res){

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { Table, Tag, Space, InputNumber,Checkbox} from 'antd';
+import { Table, Tag, Space, InputNumber,Checkbox, Switch} from 'antd';
 import { Select } from 'antd';
 
 import { Rate } from 'antd';
@@ -12,6 +12,20 @@ import fuzzy, { filter } from 'fuzzy'
 const { Search } = Input;
 const { Option } = Select;
 
+function addfav(foodid){
+    axios.post("http://localhost:4000/buyerdash/fav",{
+        fooditem: foodid
+    },{
+    headers: {
+        authorization: `Bearer ${sessionStorage.getItem("token")}`
+    }
+    }).then(res => {
+        console.log(res.data);
+    }).catch(err => {
+        console.log(err);
+    })
+}
+
 const Buyer  =  () => {
     const [fooditems, setFooditems] = useState({});
     const [loading, setLoading] = useState(true);
@@ -21,7 +35,13 @@ const Buyer  =  () => {
     const [shopfilter, setShopfilter] = useState([]);
     const [tagfilter, setTagfilter] = useState([]);
     const [pricefilter, setPricefilter] = useState([0, 999999]);
-    const [typefilter, setTypefilter] = useState([true, true]);
+    const [favourite, setFavourite] = useState(false);
+    const [favfilter, setFavfilter] = useState(false);
+    const [modal, setModal] = useState(false);
+    const [buyform] = Form.useForm()
+    const [visible,setVisible] = useState(false);
+    const [foodid,setFoodid] = useState("");
+
 
     const token = sessionStorage.getItem("token")
     useEffect(() => {
@@ -38,7 +58,7 @@ const Buyer  =  () => {
         )
 
     }
-    , [])
+    , [favourite])
 
 
 
@@ -46,6 +66,42 @@ const Buyer  =  () => {
         return <div>Loading...</div>
     }
     console.log(fooditems.vendors)
+
+    const showModal = () => {
+        setVisible(true);
+        buyform.resetFields();
+    };
+
+    const buyfoodSubmit = (values) => {
+        axios.post("http://localhost:4000/buyerdash/orderfood",{
+            fooditem: foodid,
+            quantity: values.quantity
+        },
+        {
+            headers: {
+                authorization: `Bearer ${sessionStorage.getItem("token")}`
+            }
+        })
+        .then(res => {
+            console.log(res.data);
+
+            setVisible(false);
+            buyform.resetFields();
+            window.location.href ="/buyerorders";
+        }
+        )
+        .catch(err => {
+            console.log(err);
+        }
+        )
+
+
+    }
+
+    const Cancel = () => {
+        setVisible(false);
+        buyform.resetFields();
+    };
 
     const onSearch = (e) => {
         setSearch(e.target.value);
@@ -59,7 +115,7 @@ const Buyer  =  () => {
 
      const nonvegfilterhandler = (e) => {
         setNonvegfilter(e.target.checked);
-        console.log(e.target.checked);
+        // console.log(e.target.checked);
     }
 
     const handleShop = (values) => {
@@ -77,6 +133,29 @@ const Buyer  =  () => {
 
 
     });
+
+    const MinPrice = (e) => {
+        if (e.target.value.length > 0) {
+            setPricefilter([e.target.value, pricefilter[1]])
+        }
+        else {
+            setPricefilter([0, pricefilter[1]])
+        }
+    }
+    const MaxPrice = (e) => {
+        if (e.target.value.length > 0) {
+            setPricefilter([pricefilter[0], e.target.value])
+        }
+        else {
+            setPricefilter([pricefilter[0], 999999])
+        }
+    }
+
+    const onChange = (e) => {
+        // console.log(e);
+        setFavfilter(e);
+    }
+
     var tags = []
     fooditems.tags.forEach(element => {
         tags.push(<Option key = {element}>{element}</Option>)
@@ -160,6 +239,12 @@ const Buyer  =  () => {
             title: 'Price',
             dataIndex: 'price',
             key: 'price',
+            sorter : (a,b) => a.price - b.price,
+            onFilter : (value, record) => {
+                const pricefil = value.split(',');
+                return record.price >= pricefil[0] && record.price <= pricefil[1];
+            },
+            filteredValue: [pricefilter],
         },
         {
             title: 'Type',
@@ -198,7 +283,7 @@ const Buyer  =  () => {
                     </div>
                 )
             },
-            filteredValue: [[vegfilter, nonvegfilter]],
+            filteredValue: [vegfilter, nonvegfilter],
         },
         {
             title: 'Rating',
@@ -206,15 +291,16 @@ const Buyer  =  () => {
             key: 'rating',
             render: rating => (
                 <Rate allowHalf defaultValue={rating} disabled />
-            )
+            ),
+            sorter : (a,b) => a.rating - b.rating,
         },
         {
             title: 'Tags',
             key: 'tag',
             dataIndex: 'tag',
             onFilter: (value, record) => {
-                console.log(record);
-                console.log(value);
+                // console.log(record);
+                // console.log(value);
                 if(value.length === 0) {
 
                     return true;
@@ -264,12 +350,22 @@ const Buyer  =  () => {
 
                 <Space size="middle">
 
-                    <Button>{currdata.favourite ? "Unfav" : "Addtofav"}</Button>
-                    <Button>Buy</Button>
+                    <Button onClick={()=> {addfav(currdata.id);setFavourite(!favourite)}}>{currdata.favourite ? "Unfav" : "Addtofav"}</Button>
+                    <Button onClick={() => {setFoodid(currdata.id);showModal()}}>Buy</Button>
                 </Space>
 
 
             ),
+            onFilter : (value, record) => {
+                console.log(value);
+                if(value == 'true') {
+                    return record.favourite;
+                }
+                else{
+                    return true;
+                }
+            },
+            filteredValue: [favfilter],
         },
     ];
 
@@ -289,10 +385,10 @@ const Buyer  =  () => {
             dataIndex: 'shop',
             key: 'shop',
             onFilter: (value, record) => {
-                console.log(value)
-                console.log(record)
+                // console.log(value)
+                // console.log(record)
                 if(value.length === 0) {
-                    console.log("NO")
+                    // console.log("NO")
                     return true;
                 }
                 console.log("hi")
@@ -315,6 +411,14 @@ const Buyer  =  () => {
             title: 'Price',
             dataIndex: 'price',
             key: 'price',
+            sorter : (a,b) => a.price - b.price,
+            onFilter : (value, record) => {
+                // console.log(value)
+                const pricefil = value.split(',');
+                // console.log(pricefil)
+                return record.price >= pricefil[0] && record.price <= pricefil[1];
+            },
+            filteredValue: [pricefilter],
         },
         {
             title: 'Type',
@@ -362,15 +466,16 @@ const Buyer  =  () => {
             key: 'rating',
             render: rating => (
                 <Rate allowHalf defaultValue={rating} disabled />
-            )
+            ),
+            sorter : (a,b) => a.rating - b.rating,
         },
         {
             title: 'Tags',
             key: 'tags',
             dataIndex: 'tag',
             onFilter: (value, record) => {
-                console.log(record);
-                console.log(value);
+                // console.log(record);
+                // console.log(value);
                 if(value.length === 0) {
 
                     return true;
@@ -378,13 +483,13 @@ const Buyer  =  () => {
                 var flag = false;
                 record.tag.forEach(element => {
                     if(value.includes(element)){
-                        console.log(element)
+                        // console.log(element)
                         flag = true;
                     }
                 }
                 )
                 return flag;
-                console.log("bye")
+
 
             },
             filterDropdown: (
@@ -418,22 +523,66 @@ const Buyer  =  () => {
 
                 <Space size="middle">
 
-                    <Button>{currdata.favourite ? "Unfav" : "Addtofav"}</Button>
+                    <Button onClick={()=> {addfav(currdata.id);setFavourite(!favourite)}}>{currdata.favourite ? "Unfav" : "Addtofav"}</Button>
                     <Button disabled> unavailable</Button>
                 </Space>
 
 
 
             ),
+            onFilter : (value, record) => {
+                // console.log(value);
+                if(value == 'true'){
+                    return record.favourite;
+                }
+                else{
+                    return true;
+                }
+            },
+            filteredValue: [favfilter],
         },
     ];
 
     return (
         <div>
-        <Input placeholder="SearchFood" onChange={onSearch} style={{ width: 200 }} />
-        <Table columns={columnsava} dataSource={dataava} />
+            <Switch  onChange={onChange} >Favswitch</Switch>
+            <Modal visible={visible} onOk={buyform.submit} onCancel={Cancel}>
+            <Form
+                form = {buyform}
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 10 }}
+                onFinish={buyfoodSubmit}
 
-        <Table columns={columnsunava} dataSource={dataunava} />
+                >
+                <Form.Item
+                    label="Q"
+                    name="quantity"
+                    rules={[{ required: true, message: 'Please input the quantity!' }]}
+                    >
+                        <InputNumber min={1} max={10} />
+                </Form.Item>
+                <Form.Item
+                    label="Quantity"
+                    name="quantity"
+                    rules={[{ required: true, message: 'Please input the quantity!' }]}
+                    >
+                        <InputNumber min={1} max={10} />
+                    </Form.Item>
+
+                </Form>
+            </Modal>
+            <Input autoFocus placeholder="Min Price"
+                onChange={MinPrice}
+                style={{ width: 200 }}
+            ></Input>
+            <Input autoFocus placeholder="Max Price"
+                onChange={MaxPrice}
+                style={{ width: 200 }}
+            ></Input>
+            <Input placeholder="SearchFood" onChange={onSearch} style={{ width: 200 }} />
+            <Table columns={columnsava} dataSource={dataava} />
+
+            <Table columns={columnsunava} dataSource={dataunava} />
         </div>
         )
 

@@ -119,13 +119,46 @@ router.post("/addmoney", function (req, res) {
     }
 })
 
+router.post("/rate", async function(req,res) {
+    const decoded = decodeToken(req.headers.authorization.substring(7));
+    if(decoded.type === "buyer")
+    {
+        // const vendor = await Vendor.findOne({_id: req.body.vendorId});
+        const order = await Order.findOne({_id: req.body.orderId});
+
+        const orderrate = await Order.updateOne({_id: req.body.orderId}, {$set: {rating: req.body.rating}})
+
+        //const count = await Order.count({vendor: req.body.vendorId, rating: {$gt: 0}})
+        const rating = await Order.aggregate([
+            {$match: {fooditem: order.fooditem, rating: {$gt: 0}}},
+            {$group: {_id: null, avg: {$avg: "$rating"}}}
+        ])
+
+        const foodrate = await Fooditem.updateOne({_id: order.fooditem}, {$set: {rating: rating[0].avg}})
+        // const food =  await Fooditem.findOne({_id: order.fooditem});
+        // console.log(food);
+        // console.log(rating);
+        res.send({
+            status: "success",
+            rating: rating[0].avg,
+            orderrate: orderrate,
+            foodrate: foodrate
+        });
+
+
+
+    }
+})
+
 router.post("/orderfood", async function (req,res) {
     const decoded = decodeToken(req.headers.authorization.substring(7));
     console.log(decoded)
+    console.log(req.body)
     if(decoded.type === "buyer")
     {
         const fooditem = await Fooditem.findById(req.body.fooditem);
         const user  = await User.findById(decoded.userId).populate("buyer");
+        console.log(fooditem);
 
         const price = parseInt(fooditem.price * req.body.quantity)
         console.log(price)
@@ -137,7 +170,7 @@ router.post("/orderfood", async function (req,res) {
                 fooditem: req.body.fooditem,
                 quantity: req.body.quantity,
                 buyer: decoded.userId,
-                vendor: req.body.vendor
+                vendor: fooditem.vendor
             });
             order.save().then(order => {
                 res.send(order);
