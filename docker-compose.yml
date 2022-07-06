@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+    mongodb:
+      image: mongo
+      container_name: mongodb
+      volumes:
+        - data:/data/db
+      restart: always
+      environment:
+        - MONGO_INITDB_DATABASE=tutorial
+      networks:
+        - app
+    backend:
+      depends_on:
+        - mongodb
+      build: ./backend
+      restart: unless-stopped
+      networks:
+        - app
+    frontend:
+      depends_on:
+        - backend
+      build:
+        context: ./frontend
+      networks:
+        - app
+    nginx:
+      depends_on:
+        - frontend
+        - backend
+      image: nginx:latest
+      container_name: webserver
+      restart: unless-stopped
+      ports:
+        - 80:80
+      volumes:
+        - ./nginx/local.conf:/etc/nginx/nginx.conf
+      networks:
+        - app
+
+volumes:
+  data:
+
+networks:
+  app:
+

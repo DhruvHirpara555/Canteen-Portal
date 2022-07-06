@@ -22,7 +22,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Connection to MongoDB
-mongoose.connect('mongodb://127.0.0.1:27017/' + DB_NAME, { useNewUrlParser: true });
+mongoose.connect('mongodb://mongodb/' + DB_NAME, { useNewUrlParser: true });
 const connection = mongoose.connection;
 connection.once('open', function() {
     console.log("MongoDB database connection established successfully !");
@@ -30,16 +30,16 @@ connection.once('open', function() {
 
 // setup API endpoints
 
-app.use("/user", UserRouter);
+app.use("/api/user", UserRouter);
 
 app.use(authRouter)
-app.use("/dashboard", dashboardRouter);
-app.use("/decode", decode)
-app.use("/testAPI", testAPIRouter);
-app.use("/profile", profile);
-app.use("/edit",ediprof);
-app.use("/buyerdash",buyrouter);
-app.use("/stats",statsrouter);
+app.use("/api/dashboard", dashboardRouter);
+app.use("/api/decode", decode)
+app.use("/api/testAPI", testAPIRouter);
+app.use("/api/profile", profile);
+app.use("/api/edit",ediprof);
+app.use("/api/buyerdash",buyrouter);
+app.use("/api/stats",statsrouter);
 
 
 app.listen(PORT, function() {
